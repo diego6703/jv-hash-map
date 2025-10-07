@@ -3,9 +3,9 @@ package core.basesyntax;
 import java.util.Objects;
 
 public class MyHashMap<K, V> implements MyMap<K, V> {
-    static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
-    static final int MAXIMUM_CAPACITY = Integer.MAX_VALUE;
-    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+    private static final int DEFAULT_INITIAL_CAPACITY = 1 << 4;
+    private static final int MAXIMUM_CAPACITY = Integer.MAX_VALUE;
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
     private Node<K, V>[] mainList;
     private int tableCapacity;
     private int size;
@@ -21,7 +21,7 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
 
     @Override
     public void put(K key, V value) {
-        if (size >= threshold && size < MAXIMUM_CAPACITY) {
+        if (size >= threshold && tableCapacity < MAXIMUM_CAPACITY) {
             expandTable();
         }
         int index = hash(key);
@@ -42,6 +42,10 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
                     return;
                 }
                 firstNode = firstNode.next;
+            }
+            if (firstNode.key == null) {
+                firstNode.value = value;
+                return;
             }
             firstNode.next = new Node<>(index, key, value, null);
             size++;
@@ -141,7 +145,7 @@ public class MyHashMap<K, V> implements MyMap<K, V> {
         private V value;
         private Node<K, V> next;
 
-        Node(int hash, K key, V value, Node<K, V> next) {
+        private Node(int hash, K key, V value, Node<K, V> next) {
             this.hash = hash;
             this.key = key;
             this.value = value;
